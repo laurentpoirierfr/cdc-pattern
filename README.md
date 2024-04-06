@@ -28,12 +28,14 @@ Postgres doit démarrer en mode spécifique avec l'ajout d'un plugin **wal2json*
 
 ### Extrait postgres/Dockerfile
 
-
 ```Dockerfile
 FROM postgres:14
 
 RUN apt-get update &&  apt-get -y install postgresql-14-wal2json
 ```
+
+
+### Démarrage
 
 ```bash
 cd debezium
