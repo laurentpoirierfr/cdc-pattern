@@ -42,6 +42,37 @@ cd debezium
 ./start-demo.sh
 ```
 
+
+## Paramétrage Debezium
+
+### Création du connecteur 
+
+```bash
+# Create connector
+cd debezium/demo
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:9090/connectors/ -d @pg-source-config.json
+```
+
+### Fichier de conf "pg-source-config.json" pour la création d'un connecteur
+
+```json
+{
+    "name": "pg-demo-source",
+    "config": {
+        "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+        "database.hostname": "postgres",
+        "database.port": "5432",
+        "database.user": "postgres",    
+        "database.password": "postgres",
+        "database.dbname": "demo",
+        "database.server.name": "postgres-local",
+        "plugin.name": "wal2json",
+        "table.include.list": "public.credit_cards,public.users",
+        "value.converter": "org.apache.kafka.connect.json.JsonConverter"
+    }
+}
+```
+
 ## Lancement des tests
 
 ```bash
