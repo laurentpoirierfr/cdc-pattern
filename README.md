@@ -1,17 +1,25 @@
 # README
 
+## Démarrage platforme
 
-```sql
-CREATE TABLE customers (id int GENERATED ALWAYS AS IDENTITY PRIMARY KEY, name text);
-
-ALTER TABLE customers REPLICA IDENTITY USING INDEX customers_pkey;
-
-INSERT INTO customers (name) VALUES ('john'), ('jack'), ('jane');
-
-SELECT * FROM customers;
-
-TRUNCATE customers;
+```bash
+cd debezium
+./start-demo.sh
 ```
+
+## Lancement des tests
+
+```bash
+cd gorm
+go run main.go
+```
+
+## Consultation des topics
+
+```bash
+open http://localhost:8080
+```
+
 
 ## References
 
