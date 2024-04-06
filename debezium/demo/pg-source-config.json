@@ -1,0 +1,15 @@
+{
+    "name": "pg-demo-source",
+    "config": {
+        "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+        "database.hostname": "postgres",
+        "database.port": "5432",
+        "database.user": "postgres",    
+        "database.password": "postgres",
+        "database.dbname": "demo",
+        "database.server.name": "postgres-local",
+        "plugin.name": "wal2json",
+        "table.include.list": "public.credit_cards,public.users",
+        "value.converter": "org.apache.kafka.connect.json.JsonConverter"
+    }
+}
