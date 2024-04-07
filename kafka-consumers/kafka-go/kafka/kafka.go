@@ -17,7 +17,7 @@ const (
 	LAST_OFFSET  = kafka.LastOffset
 )
 
-func CreateTopic(kafkaURL, topic string, partitions, replications int) {
+func CreateTopic(kafkaURL, topic string, partitions, replicas int) {
 	conn, err := kafka.Dial("tcp", kafkaURL)
 	if err != nil {
 		panic(err.Error())
@@ -34,7 +34,7 @@ func CreateTopic(kafkaURL, topic string, partitions, replications int) {
 	}
 	defer controllerConn.Close()
 
-	topicConfigs := []kafka.TopicConfig{{Topic: topic, NumPartitions: partitions, ReplicationFactor: replications}}
+	topicConfigs := []kafka.TopicConfig{{Topic: topic, NumPartitions: partitions, ReplicationFactor: replicas}}
 
 	err = controllerConn.CreateTopics(topicConfigs...)
 	if err != nil {
