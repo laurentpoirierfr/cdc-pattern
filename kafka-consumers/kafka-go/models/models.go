@@ -8,10 +8,10 @@ import (
 )
 
 type Item struct {
-	Id          string
-	Name        string  `faker:"name"`
-	Description string  `faker:"paragraph"`
-	Price       float64 `faker:"amount"`
+	Id          string  `json:"id"`
+	Name        string  `faker:"name" json:"name"`
+	Description string  `faker:"paragraph" json:"description"`
+	Price       float64 `faker:"amount" json:"price"`
 }
 
 func NewItem() *Item {

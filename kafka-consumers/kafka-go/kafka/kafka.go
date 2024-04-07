@@ -54,9 +54,13 @@ func Producer(kafkaURL, topic string) {
 
 	defer kafkaWriter.Close()
 
-	headers := []kafka.Header{{Key: "myTestHeader", Value: []byte("header values are binary")}}
+	kafkaWriter.Async = true
 
 	for {
+		headers := []kafka.Header{
+			{Key: "business.client-id", Value: []byte(tools.NewId())},
+		}
+
 		item := models.NewItem().Json()
 		msg := kafka.Message{
 			Key: []byte(tools.NewId()),
@@ -68,6 +72,7 @@ func Producer(kafkaURL, topic string) {
 		if err != nil {
 			log.Fatalln(err)
 		}
+
 		tools.TraceMessage("produce :", msg)
 		// time.Sleep(1 * time.Second)
 	}
