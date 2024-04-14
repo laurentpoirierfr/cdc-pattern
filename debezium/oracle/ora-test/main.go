@@ -2,45 +2,44 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 
 	_ "github.com/sijms/go-ora"
 )
 
+type Account struct {
+	User     string
+	Password string
+}
+
 func main() {
 
-	// connectString format: [hostname]:[port]/[DB service name]
-
-	dsn := `user="system" password="password" connectString="localhost:1521/FREE"`
-	db, err := sql.Open("oracle", dsn)
-	if err != nil {
-		panic(err)
+	accounts := []Account{
+		{
+			User:     "system",
+			Password: "password",
+		},
+		{
+			User:     "demo",
+			Password: "demo",
+		},
 	}
-	db.Close()
-	log.Println("Connection localhost:1521/FREE user <system>  Ok !")
 
-	dsn = `user="demo" password="demo" connectString="localhost:1521/FREE"`
-	db, err = sql.Open("oracle", dsn)
-	if err != nil {
-		panic(err)
-	}
-	db.Close()
-	log.Println("Connection localhost:1521/FREE user <demo>  Ok !")
+	dbServices := []string{"FREE", "FREEPDB1"}
 
-	dsn = `user="system" password="password" connectString="localhost:1521/FREEPDB1"`
-	db, err = sql.Open("oracle", dsn)
-	if err != nil {
-		panic(err)
+	for _, dbService := range dbServices {
+		for _, account := range accounts {
+			// connectString format: [hostname]:[port]/[DB service name]
+			dsn := fmt.Sprintf("user=%s password=%s connectString=localhost:1521/%s", account.User, account.Password, dbService)
+			db, err := sql.Open("oracle", string(dsn))
+			if err != nil {
+				panic(err)
+			}
+			db.Close()
+			msg := fmt.Sprintf("Connection localhost:1521/%s user <%s>  Ok !", dbService, account.User)
+			log.Println(msg)
+		}
 	}
-	log.Println("Connection localhost:1521/FREEPDB1 user <system> Ok !")
-	db.Close()
-
-	dsn = `user="demo" password="demo" connectString="localhost:1521/FREEPDB1"`
-	db, err = sql.Open("oracle", dsn)
-	if err != nil {
-		panic(err)
-	}
-	log.Println("Connection localhost:1521/FREEPDB1 user <demo> Ok !")
-	db.Close()
 
 }
