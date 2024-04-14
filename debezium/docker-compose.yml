@@ -24,6 +24,17 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     hostname: kafka
 
+  schema-registry:
+    image: confluentinc/cp-schema-registry:${CONFLUENT_VERSION:-latest}
+    restart: unless-stopped
+    depends_on:
+      - kafka
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'PLAINTEXT://kafka:9092'
+      SCHEMA_REGISTRY_HOST_NAME: 'schema-registry'
+      SCHEMA_REGISTRY_LISTENERS: 'http://0.0.0.0:8085'
+      SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: 'INFO'
+
   postgres:
     build:
       context: postgres
@@ -58,10 +69,30 @@ services:
       - OFFSET_STORAGE_TOPIC=pg_connect_offsets
       - STATUS_STORAGE_TOPIC=pg_connect_statuses
 
-  kafka-ui:
-    container_name: kafka-ui
-    image: provectuslabs/kafka-ui:latest
+  # kafka-ui:
+  #   container_name: kafka-ui
+  #   image: provectuslabs/kafka-ui:latest
+  #   ports:
+  #     - 8080:8080
+  #   environment:
+  #     - DYNAMIC_CONFIG_ENABLED=true
+
+  akhq:
+    # build:
+    #   context: .
+    image: tchiotludo/akhq
+    restart: unless-stopped
+    environment:
+      AKHQ_CONFIGURATION: |
+        akhq:
+          connections:
+            docker-kafka-server:
+              properties:
+                bootstrap.servers: "kafka:9092"
+              schema-registry:
+                url: "http://schema-registry:8085"
     ports:
       - 8080:8080
-    environment:
-      - DYNAMIC_CONFIG_ENABLED=true
+    links:
+      - kafka
+      - schema-registry

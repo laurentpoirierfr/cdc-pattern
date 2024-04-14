@@ -1,0 +1,46 @@
+@startuml
+package model/model.go{
+class Order {
++: Model
++TotalPaid: float64
++Products: []Product
++OperationDate: Time
++UserID: uint
+
+}
+class Product {
++: Model
++Name: string
++Description: string
++Price: float64
++OrderId: uint
+
+}
+class User {
++: Model
++FirstName: string
++LastName: string
++Adress: string
++Email: string
++CreditCards: []CreditCard
++Orders: []Order
+
+}
+class CreditCard {
++: Model
++Number: string
++UserID: uint
+
+}
+}
+package .{
+annotation . {
+
+-var db: *DB
+-init()
+-main()
+}
+}
+
+
+@enduml

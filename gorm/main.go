@@ -1,6 +1,10 @@
 package main
 
+//go:generate go-plantuml generate -f model/model.go -o model/graph.puml
+
 import (
+	"gorm-demo/model"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -8,19 +12,6 @@ import (
 var (
 	db *gorm.DB
 )
-
-type CreditCard struct {
-	gorm.Model
-	Number string `json:"number"`
-	UserID uint   `json:"user_id"`
-}
-
-type User struct {
-	gorm.Model
-	Name        string `json:"name"`
-	Email       string `json:"email"`
-	CreditCards []CreditCard
-}
 
 func init() {
 	var err error
@@ -32,22 +23,31 @@ func init() {
 
 }
 
+const (
+	CREATE = "c"
+	UPDATE = "u"
+	DELETE = "d"
+)
+
 func main() {
 	// Auto migrate the model
-	db.AutoMigrate(&CreditCard{})
-	db.AutoMigrate(&User{})
+	db.AutoMigrate(&model.CreditCard{})
+	db.AutoMigrate(&model.User{})
+	db.AutoMigrate(&model.Product{})
+	db.AutoMigrate(&model.Order{})
 
-	user := new(User)
-	user.Email = "test@gmail.com"
-	user.Name = "Test"
-
-	var creditCards = []CreditCard{}
-	creditCards = append(creditCards, CreditCard{Number: "132456789"})
-	creditCards = append(creditCards, CreditCard{Number: "789546213"})
+	user := model.NewUser("first name", "last name", "adress", "test@gmail.com")
+	var creditCards = []model.CreditCard{}
+	creditCards = append(creditCards, model.CreditCard{Number: "132456789"})
+	creditCards = append(creditCards, model.CreditCard{Number: "789546213"})
 	user.CreditCards = creditCards
 
 	db.Create(&user)
 
-	// db.Delete(&user, id)
+	user.Address = "nouvelle adresse"
+
+	db.Updates(&user)
+
+	db.Delete(&user, user.ID)
 
 }
