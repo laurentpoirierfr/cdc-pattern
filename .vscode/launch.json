@@ -9,7 +9,10 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${fileDirname}"
+            "program": "${workspaceFolder}/sqlc/main.go",
+            "env": {
+                "DATABASE_URL": "postgres://postgres:postgres@localhost:5432/dvdrental"
+            }
         }
     ]
 }

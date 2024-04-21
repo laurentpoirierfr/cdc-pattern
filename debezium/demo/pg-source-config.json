@@ -9,7 +9,7 @@
         "database.dbname": "demo",
         "database.server.name": "postgres-local",
         "plugin.name": "wal2json",
-        "table.include.list": "public.credit_cards,public.users",
+        "table.include.list": "public.*",
         "value.converter": "org.apache.kafka.connect.json.JsonConverter"
     }
 }
