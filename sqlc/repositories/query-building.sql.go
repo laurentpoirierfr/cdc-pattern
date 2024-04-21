@@ -117,3 +117,119 @@ func (q *Queries) GetCustomers(ctx context.Context, arg GetCustomersParams) ([]C
 	}
 	return items, nil
 }
+
+const getCustomersByAddress = `-- name: GetCustomersByAddress :many
+SELECT customer.customer_id, customer.store_id, customer.first_name, customer.last_name, customer.email, customer.address_id, customer.activebool, customer.create_date, customer.last_update, customer.active 
+FROM customer, address, city, country
+WHERE customer.address_id = address.address_id 
+AND address.address_id  = $1
+`
+
+func (q *Queries) GetCustomersByAddress(ctx context.Context, addressID int32) ([]Customer, error) {
+	rows, err := q.db.Query(ctx, getCustomersByAddress, addressID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Customer
+	for rows.Next() {
+		var i Customer
+		if err := rows.Scan(
+			&i.CustomerID,
+			&i.StoreID,
+			&i.FirstName,
+			&i.LastName,
+			&i.Email,
+			&i.AddressID,
+			&i.Activebool,
+			&i.CreateDate,
+			&i.LastUpdate,
+			&i.Active,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getCustomersByCity = `-- name: GetCustomersByCity :many
+SELECT customer.customer_id, customer.store_id, customer.first_name, customer.last_name, customer.email, customer.address_id, customer.activebool, customer.create_date, customer.last_update, customer.active 
+FROM customer, address, city, country
+WHERE customer.address_id = address.address_id 
+AND address.city_id = city.city_id
+AND city.city_id = $1
+`
+
+func (q *Queries) GetCustomersByCity(ctx context.Context, cityID int32) ([]Customer, error) {
+	rows, err := q.db.Query(ctx, getCustomersByCity, cityID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Customer
+	for rows.Next() {
+		var i Customer
+		if err := rows.Scan(
+			&i.CustomerID,
+			&i.StoreID,
+			&i.FirstName,
+			&i.LastName,
+			&i.Email,
+			&i.AddressID,
+			&i.Activebool,
+			&i.CreateDate,
+			&i.LastUpdate,
+			&i.Active,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getCustomersByCountry = `-- name: GetCustomersByCountry :many
+SELECT customer.customer_id, customer.store_id, customer.first_name, customer.last_name, customer.email, customer.address_id, customer.activebool, customer.create_date, customer.last_update, customer.active 
+FROM customer, address, city, country
+WHERE customer.address_id = address.address_id 
+AND address.city_id = city.city_id
+AND city.country_id = country.country_id AND country.country_id = $1
+`
+
+func (q *Queries) GetCustomersByCountry(ctx context.Context, countryID int32) ([]Customer, error) {
+	rows, err := q.db.Query(ctx, getCustomersByCountry, countryID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Customer
+	for rows.Next() {
+		var i Customer
+		if err := rows.Scan(
+			&i.CustomerID,
+			&i.StoreID,
+			&i.FirstName,
+			&i.LastName,
+			&i.Email,
+			&i.AddressID,
+			&i.Activebool,
+			&i.CreateDate,
+			&i.LastUpdate,
+			&i.Active,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

@@ -29,9 +29,9 @@ func main() {
 
 	router := gin.Default()
 
-	api := router.Group("/api/customers")
+	apiCustomers := router.Group("/api/customers")
 	{
-		api.GET("/", func(c *gin.Context) {
+		apiCustomers.GET("/", func(c *gin.Context) {
 			limit := c.DefaultQuery("limit", "100")
 			offset := c.DefaultQuery("offset", "0")
 
@@ -60,7 +60,7 @@ func main() {
 			})
 		})
 
-		api.GET("/:id", func(c *gin.Context) {
+		apiCustomers.GET("/:id", func(c *gin.Context) {
 			var query Query
 			if err := c.ShouldBindUri(&query); err != nil {
 				c.JSON(400, gin.H{"msg": err})
@@ -72,6 +72,38 @@ func main() {
 				return
 			}
 			c.JSON(200, customer)
+		})
+
+		apiCustomers.GET("/address/cities/countries/:id", func(c *gin.Context) {
+			var query Query
+			if err := c.ShouldBindUri(&query); err != nil {
+				c.JSON(400, gin.H{"msg": err})
+				return
+			}
+			customer, err := srv.GetCustomersByCountry(query.ID)
+			if err != nil {
+				c.JSON(400, gin.H{"msg": err})
+				return
+			}
+			c.JSON(200, customer)
+		})
+
+	}
+
+	apiCountries := router.Group("/api/countries")
+	{
+		apiCountries.GET("/:id", func(c *gin.Context) {
+			var query Query
+			if err := c.ShouldBindUri(&query); err != nil {
+				c.JSON(400, gin.H{"msg": err})
+				return
+			}
+			country, err := srv.GetCountry(query.ID)
+			if err != nil {
+				c.JSON(400, gin.H{"msg": err})
+				return
+			}
+			c.JSON(200, country)
 		})
 	}
 

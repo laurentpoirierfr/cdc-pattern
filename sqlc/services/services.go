@@ -65,6 +65,38 @@ func (s *Service) GetCustomers(limit, offset int32) ([]models.Customer, error) {
 	return customers, nil
 }
 
+func (s *Service) GetCustomersByCountry(id int32) ([]models.Customer, error) {
+	repoCustomers, err := s.queries.GetCustomersByCountry(s.ctx, id)
+	if err != nil {
+		return []models.Customer{}, err
+	}
+
+	var customers []models.Customer
+	for _, repoCustomer := range repoCustomers {
+		address, err := s.GetAddress(int32(repoCustomer.AddressID))
+		if err != nil {
+			return []models.Customer{}, err
+		}
+
+		customer := models.Customer{
+			CustomerID: repoCustomer.CustomerID,
+			StoreID:    repoCustomer.StoreID,
+			FirstName:  repoCustomer.FirstName,
+			LastName:   repoCustomer.LastName,
+			Email:      repoCustomer.Email,
+			Address:    address,
+			Activebool: repoCustomer.Activebool,
+			CreateDate: repoCustomer.CreateDate,
+			LastUpdate: repoCustomer.LastUpdate,
+			Active:     repoCustomer.Active,
+		}
+
+		customers = append(customers, customer)
+	}
+
+	return customers, nil
+}
+
 func (s *Service) GetCustomer(id int32) (models.Customer, error) {
 	repoCustomer, err := s.queries.GetCustomer(s.ctx, id)
 	if err != nil {
