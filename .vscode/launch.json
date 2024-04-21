@@ -12,7 +12,7 @@
             "program": "${workspaceFolder}/sqlc/main.go",
             "env": {
                 "DATABASE_URL": "postgres://postgres:postgres@localhost:5432/dvdrental",
-                "PORT": "9090"
+                "PORT": "7070"
             }
         }
     ]
