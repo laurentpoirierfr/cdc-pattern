@@ -1,39 +1,43 @@
 package main
 
 import (
-	"context"
+	"bytes"
+	"encoding/json"
 	"log"
-	"os"
-	repo "sqlc-demo/repositories"
-
-	"github.com/jackc/pgx/v5"
+	"sqlc-demo/services"
 )
 
 //go:generate sqlc generate
 
 func main() {
-	ctx := context.Background()
-	conn, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
+	srv, err := services.NewService()
 	OnErr(err)
-
-	defer conn.Close(ctx)
-
-	queries := repo.New(conn)
-
-	arg := repo.GetCustomersParams{
-		Limit:  10,
-		Offset: 1,
-	}
-
-	address, err := queries.GetCustomers(ctx, arg)
+	customer, err := srv.GetCustomer(1)
 	OnErr(err)
-
-	log.Println(address)
-
+	pretty, err := PrettyJson(customer)
+	OnErr(err)
+	log.Println(pretty)
 }
 
 func OnErr(err error) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+const (
+	empty = ""
+	tab   = "\t"
+)
+
+func PrettyJson(data interface{}) (string, error) {
+	buffer := new(bytes.Buffer)
+	encoder := json.NewEncoder(buffer)
+	encoder.SetIndent(empty, tab)
+
+	err := encoder.Encode(data)
+	if err != nil {
+		return empty, err
+	}
+	return buffer.String(), nil
 }
