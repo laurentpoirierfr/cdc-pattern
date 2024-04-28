@@ -1,5 +1,9 @@
 # README
 
+## Schéma
+
+![schema](./assets/schema.png)
+
 ## Démarrage platforme
 
 Postgres doit démarrer en mode spécifique avec l'ajout d'un plugin **wal2json**
