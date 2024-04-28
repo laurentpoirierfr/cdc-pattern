@@ -1,4 +1,17 @@
-# README
+# CDC Pattern
+
+## Introduction
+
+Le Change Data Capture (CDC) est un modèle de conception utilisé dans les systèmes de bases de données pour détecter et capturer les modifications apportées aux données. En résumé, voici ses principaux points :
+
+* Détection des changements : Le CDC surveille en permanence les modifications apportées aux données dans une base de données.
+* Capturer les modifications : Une fois qu'un changement est détecté, le CDC enregistre ces modifications dans un journal ou une table dédiée, généralement appelée journal de modifications.
+* Propagation des changements : Les modifications capturées peuvent ensuite être propagées vers d'autres systèmes ou applications pour maintenir les données synchronisées en temps réel.
+* Historisation des données : Le CDC peut également être utilisé pour conserver un historique des modifications apportées aux données, ce qui est utile pour l'analyse, la conformité réglementaire et la récupération en cas de sinistre.
+
+En résumé, le CDC permet de suivre et de réagir aux modifications des données en temps réel, ce qui est essentiel pour de nombreuses applications, notamment les entrepôts de données, la synchronisation de bases de données distribuées et la gestion des données en temps réel.
+
+
 
 ## Schéma
 
@@ -80,8 +93,7 @@ curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" 
 ## Lancement des tests
 
 ```bash
-cd gorm
-go run main.go
+
 ```
 
 ## Consultation des topics
