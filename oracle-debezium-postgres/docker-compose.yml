@@ -1,0 +1,99 @@
+version: "3"
+
+services:
+
+  redpanda:
+    image: vectorized/redpanda:v23.2.17
+    command:
+      - redpanda start
+      - --smp 1
+      - --overprovisioned
+      - --node-id 0
+      - --kafka-addr PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
+      - --advertise-kafka-addr PLAINTEXT://redpanda:29092,OUTSIDE://localhost:9092
+      - --pandaproxy-addr 0.0.0.0:8082
+      - --advertise-pandaproxy-addr localhost:8082
+    ports:
+      - 8081:8081
+      - 8082:8082
+      - 9092:9092
+      - 29092:29092
+    networks:
+      - app-tier
+
+  console:
+    image: docker.redpanda.com/redpandadata/console:v2.3.8
+    restart: on-failure
+    entrypoint: /bin/sh
+    command: -c "echo \"$$CONSOLE_CONFIG_FILE\" > /tmp/config.yml; /app/console"
+    environment:
+      CONFIG_FILEPATH: /tmp/config.yml
+      CONSOLE_CONFIG_FILE: |
+        kafka:
+          brokers: ["redpanda:29092"]
+          schemaRegistry:
+            enabled: true
+            urls: ["http://redpanda:8081"]
+        connect:
+          enabled: true
+          clusters:
+            - name: datagen
+              url: http://connect:8083
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redpanda
+    networks:
+      - app-tier   
+
+  postgre-db:
+    shm_size: '1gb'
+    image: postgres:latest
+    container_name: pgdb
+    networks:
+      - app-tier
+    restart: "no"
+    ports:
+      - 5432:5432
+    command: postgres -c timezone='US/Eastern'
+    environment:
+      - POSTGRES_PASSWORD=12345
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+      - PGDATA=/var/lib/postgresql/data
+    volumes:
+      - type: volume
+        source: pgdb-data
+        target: /var/lib/postgresql
+        read_only: false
+
+  connect:
+    image: debezium/connect:latest
+    container_name: connect
+    networks:
+      - app-tier
+    ports:
+      - 8083:8083
+    environment:
+      - GROUP_ID=1
+      - CONFIG_STORAGE_TOPIC=cdc_storage
+      - OFFSET_STORAGE_TOPIC=cdc_offset
+      - BOOTSTRAP_SERVERS=redpanda:29092
+      - CONNECT_PLUGIN_PATH=/kafka/connect
+    volumes:
+      - ./jar/confluentinc-kafka-connect-jdbc-10.6.3:/kafka/connect/confluentinc-kafka-connect-jdbc-10.6.3
+      - ./jar/debezium-connector-oracle:/kafka/connect/debezium-connector-oracle
+    depends_on:
+      - redpanda
+      - postgre-db
+
+
+networks:
+  app-tier:
+    driver: bridge
+
+volumes:
+  oracle_data:
+    driver: local
+  pgdb-data:
+    driver: local

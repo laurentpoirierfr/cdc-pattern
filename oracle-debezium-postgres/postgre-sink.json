@@ -1,0 +1,21 @@
+{
+    "name": "jdbc-sink-customers-postgress",
+    "config": {
+        "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
+        "tasks.max": "1",
+        "dialect.name": "PostgreSqlDatabaseDialect",
+        "table.name.format": "contact",
+        "topics": "server1.C__DBZUSER.CONTACT",
+        "connection.url": "jdbc:postgresql://postgre-db:5432/postgres?currentSchema=postgres",
+        "connection.user": "postgres",
+        "connection.password": "12345",
+        "transforms": "unwrap",
+        "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+        "transforms.unwrap.drop.tombstones": "false",
+        "insert.mode": "upsert",
+        "delete.enabled": "true",
+        "auto.create": "true",
+        "pk.fields": "CONTACT_ID",
+        "pk.mode": "record_key"
+    }
+}
